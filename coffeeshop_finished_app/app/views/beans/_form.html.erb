@@ -1,0 +1,9 @@
+<%= form_for @bean do |f| %>
+    Name: <%= f.text_field :name %>
+    Roast: <%= f.text_field :roast %>
+    Origin: <%= f.text_field :origin %>
+    Quantity: <%= f.text_field :quantity %>
+
+    <%= f.submit "New/Edit Bean" %>
+
+<% end %>
