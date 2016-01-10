@@ -112,7 +112,7 @@ We've talked before about the 7 basic CRUD routes. Using the example of a "photo
 
 <br>
 
-## Code Along - Part 1: On the Runway - INDEX
+## On the Runway - INDEX Action
 
 ### Setup With Rails New
 
@@ -132,10 +132,10 @@ Now our app is up and running, [localhost:3000](http://localhost:3000/). At our 
 
 In *Rails*, you write routes into a special file: `config/routes.rb`. The code you put in this file essentially defines how to connect **requests** to **controllers**. 
 
-Go to `config/routes.rb` and inside the routes block erase all the commented text. It should now look exactly as follows:
+Go to `config/routes.rb`. The outer block should look something like this:
 
 ```ruby
-RouteApp::Application.routes.draw do
+Rails.application.routes.draw do
 
 end
 ```
@@ -149,11 +149,11 @@ Essentially, `routes.rb` just tells your app how to connect *HTTP* requests to a
 
 The nature of any route goes as follows:
   
-    `request_type '/for/some/path/goes', to: "controller#method"`
+    request_type "/for/some/path/goes", to: "controller#method"
 
   e.g. if we had a `PuppiesController` that had a `index` method we could say
 
-    `get "/puppies", to: "puppies#index"`
+    get "/puppies", to: "puppies#index"
   
   Rails already assumes that `"puppies"` in the `puppies#index` part of the route refers to a class called `PuppiesController`. It also assume it can find that class in the `app/controllers` folder. As a result, there's no need to write `Controller` to designate the class `PuppiesController` or to tell Rails where to look for this file in your application.
 
@@ -188,36 +188,39 @@ Because just about every application has a `root` route, rails has a special `ro
 `/config/routes.rb`
 ```ruby	
 RouteApp::Application.routes.draw do
-  root to: 'planes#index'
+  root 'planes#index'
 end
 ```
 
----
-### Making a Planes Controller
+### Building a Planes Controller
 
 We want to create a *planes_controller*. **NOTE**: Controller names are always plural and files should always be `snake_case`.
 
-  $ subl app/controllers/planes_controller.rb
+  `$ subl app/controllers/planes_controller.rb`
 
 Let's begin with the following 
 
 ```ruby
-  class PlanesController < ApplicationController
-    def index
-      render text: "Hello, pilots."
-    end
+class PlanesController < ApplicationController
+    
+  def index
+    render text: "Hello, pilots."
   end
+
+end
 ```
 
 We have defined the`PlanesController` *class*, given it the method `#index`, and told the `#index` to render a *text* response `'Hello, pilots.'`
 
 > Note:  We've also indicated that `PlanesController` inherits from `ApplicationController`, which looks like the following:
 
->   class ApplicationController < ActionController::Base
-     # Prevent CSRF attacks by raising an exception.
-     # For APIs, you may want to use :null_session instead.
-     protect_from_forgery with: :exception
-    end
+```ruby
+class ApplicationController < ActionController::Base
+   # Prevent CSRF attacks by raising an exception.
+   # For APIs, you may want to use :null_session instead.
+   protect_from_forgery with: :exception
+end
+```
 
 > Indeed, `ApplicationController` also inherits from `ActionController::Base`, which is just the main *action* handling class. Actions it might handle are requests, responses, rendering views, etc. The `ApplicationController` helps define the setup/configuration of all other controllers and has methods defined accross the entire application.
 
@@ -228,33 +231,37 @@ If we go to [localhost:3000/](localhost:3000/) we get the greeting.
 
 ### A View For Planes
 
-Let's seperate our rendered greeting into a view called `index.html.erb`, which by default `ActionController` will look for in a  `app/views/planes/` folder. Create the file below
+Let's seperate our rendered greeting into a view called `index.html.erb`, which by default `ActionController` will look for in a  `app/views/planes/` folder. Create the file below and add the following code:
 
-`app/views/planes/index.html.erb`
-
-  Hello, pilots!
+```ruby
+# app/views/planes/index.html.erb
+<h1>Hello Pilots!</h1>
+```
 
 and make the following changes to `PlanesController`.
 
 `app/controllers/planes_controller.rb`
 
-  class PlanesController < ApplicationController
-    
-    def index
-      # Note it used to say 
-      # render text: 'Hello, pilots'
-      render :index
-    end
-  end
 
----
+```ruby
+class PlanesController < ApplicationController
+    
+  def index
+    # Note it used to say 
+    # render text: 'Hello, pilots'
+    render :index
+  end
+end
+```
+
+If we visit our root route in the browser what do we see? Do we even need `render :index`? Why or why not?
 
 ### A Model Plane
 
 A model is just a representation of a SQL table in our database, and the communication between the two is handled by rails via `ActiveRecord`, which has a list of prestored SQL commands to facilitate communication.
 
 
-In terminal, we create our plane model using a rails generator as follows,
+In terminal, we create our plane model using a rails generator as follows:
 
 	  $ rails g model Plane name kind description
   
@@ -266,15 +273,12 @@ To actually create this table data in our SQL database we do a migration. To mig
 
 	  $ rake db:migrate
   
-Now our application will have access to a model called `Plane` that will be persitent. Don't worry too much about the `rake` command that was just used as previous students have had the same frustration with it.
+Now our application will have access to a model called `Plane` that will be persitent. 
 
-#### Rake
-**Rake** is a software task management tool. It stands for "Ruby Make" and you can see them with `rake --tasks`.
+BTW... **Rake** is a software task management tool. It stands for "Ruby Make" and you can see them with `rake --tasks`.
 
 
----
-
-### Making your first Model
+## Creating our first Plane object
 
 **NOTE: DON'T SKIP THIS STEP**
 
@@ -284,16 +288,56 @@ We go straight into terminal to enter *rails console*.
   
 The command above enters the rails console to play with your application. 
 
-To create our first plane model in our database we use our reference the `Plane` class and call the `Plane#create` method to write our plane to our database.
+To insert the first instance of a plane into our database we'll reference the `Plane` model class and call the `Plane#create` method to write our plane to our database.
 
-  > Plane.create({name: "x-wing", kind: "unknown", description: "top secret"}) 
-  => #<Plane ....>
+```ruby
+Plane.create({name: "x-wing", kind: "unknown", description: "top secret"}) 
 
-This will avoid issues later with `index` trying to render planes that aren't there.
+=> #<Plane ....>
+```
+
+We're gonna add at least one plane to our database as to avoid issues later when `index` tries to render planes that aren't there.
 
 <br>
 
-## Back to Routes - NEW/CREATE
+### Refactoring the Index to display the planes
+
+We first need to fix our `#index` method in `planes`
+
+```ruby
+# app/controllers/planes_controller.rb
+PlanesController < ApplicationController
+    
+  def index
+    @planes = Plane.all
+  end
+    
+  ...
+	    
+end
+```
+
+Let's finally put some `erb` in our `index` view.
+
+```ruby
+# app/views/index.html.erb
+  
+<h1>Hello Pilots</h1>
+
+<% @planes.each do |plane| %>
+      
+  <div>
+    ID: <%= plane[:id] %> <br>
+    Name: <%= plane[:name] %> <br>
+    Kind: <%= plane[:kind] %> <br>
+    Description: <%= plane[:description] %>
+  </div>
+  <br>
+    
+<% end %>
+```
+
+## Back to Routes - NEW + CREATE
 
 | Motive  |
 | :---- |
@@ -303,118 +347,58 @@ This will avoid issues later with `index` trying to render planes that aren't th
 
 ### A new route for planes
 
-We have one plane in our database that we created from `rails c`. Let's create a form so that we can create new ones with our app.
+We have one plane in our database that we created directly from `rails c`. Let's create a form so that we can create new ones with our app. First, we must code a route for new planes. The *RESTful* convention would be to make a form available at `/planes/new`. 
 
-To be able to make planes we must create a route for them. The *RESTful* convention would be to make a form available at `/planes/new`. 
+What type of request will this be? Why?
 
-Let's add this route.
-
-`/config/routes.rb`
-
-	  RouteApp::Application.routes.draw do
-	    root to: 'planes#index'
+```ruby
+# /config/routes.rb
+RouteApp::Application.routes.draw do
+  root 'planes#index'
 	    
-	    # just to be RESTful
-	    get '/planes', to: 'planes#index'
+  # just to be RESTful
+  get '/planes', to: 'planes#index'
 	    
-	    # it's a `get` because 
-	    # someone is requesting
-	    #   a page with a form
-	    get '/planes/new', to: 'planes#new'
-	    
-	  end
+  # it's a `get` because someone is requesting a page with a form
+  get '/planes/new', to: 'planes#new'
+end
+```
 
----
+
 	  
 
 ### A new method for planes
 
-The request for `/planes/new` will search for a `planes#new`, so we must create a method to handle this request. This will render the `new.html.erb` in the `app/views/planes` folder.
+The request for `/planes/new` will search for a `planes#new`. We must create a method in our controller to handle this request which will then render the `new.html.erb` in the `app/views/planes` folder.
 
-`app/controllers/planes_controller.rb`
+The `new` view is gonna contain a form to instantiate a new, empty object. Let's instantiate that empty plane object.
 
-	  PlanesController < ApplicationController
+```ruby
+# app/controllers/planes_controller.rb
+PlanesController < ApplicationController
 	    
-	    ...
+  ...
 	    
-	    def new
-	      render :new
-	    end
-	    
-	  end
+  def new
+  @plane = Plane.new
+  end
 
----
+end
+```
+
+
 
 ### A new view for planes
 
-Let's create the `app/views/planes/new.html.erb` with a form that the user can use to sumbit new planes to the application. Note: the action is `/planes` because it's the collection we are submiting to, and the method is `post` because we want to create.
+Let's create the `app/views/planes/new.html.erb` with a form that the user can use to post new planes to the application. Note: the action is `/planes` because it's the collection we are submiting to, and the method is `post` because we're writing to the database.
 
+Rails has a helper method called `form_for` that we'll use to build our form.
 
-`app/views/planes/new.html.erb`
-	
-	  <form action="/planes" method="post">
-	    <input type="text" name="plane[name]">
-	    <input type="text" name="plane[kind]">
-	    <textarea name="plane[description]"></textarea>
-	    
-	    <button> Save Plane </button>
-	  </form>
+```ruby
+# app/views/planes/new.html.erb
 
-Note: The form and method we just created motivates our next `route`, which will be 
-  
-  `post "/planes", to: "planes#create"`
-  
-
----
-
-### Creating another route
-
-
-Our submission of the `plane` form in `new.html.erb` isn't being routed at the moment let's change that
-
-
-`/config/routes.rb`
-
-	  RouteApp::Application.routes.draw do
-	    root to: 'planes#index'
-	    
-	    get '/planes', to: 'planes#index'
-	    
-	    get '/planes/new', to: 'planes#new'
-	    
-	    # handle the submitted form
-	    post '/planes', to: 'planes#create'
-	    
-	  end
-
----
-
-### Creating another method
-
-This leads to the most complicated method yet to be talked about. For now we will just make it redirect to the `"/planes"` route.
-
-`app/controllers/planes_controller.rb`
-
-  PlanesController < ApplicationController
-    
-    ...
-    
-    def create
-      redirect_to "/planes"
-    end
-    
-  end
-
-> Someone should now be able to submit a form to our site, right???
-
----
-
-### Our first form
-
-`app/views/planes/new.html.erb`
-
-```
-<%= form_for @planes do |f| %>
+<h1>New Plane!</h1>
+<%= form_for @plane do |f| %>
   <p>
     <%= f.label :name %><br>
     <%= f.text_field :name %>
@@ -436,205 +420,195 @@ This leads to the most complicated method yet to be talked about. For now we wil
 <% end %>
 ```
 
-Our form should now submit properly. However, we will see that rails makes handling all the things required in a form easier using something called *form helpers* later.
+## CREATE method
 
----
+The `plane` form in `new.html.erb` isn't being routed when we hit the Submit button. Let's change that by first adding a new route to `routes.rb`
 
-### An operational create method
 
-We just need to save the data being sent in the request. We might be tempted to do the following.
-
-`app/controllers/planes_controller.rb`
-
-	  PlanesController < ApplicationController
+```ruby
+# /config/routes.rb
+RouteApp::Application.routes.draw do
+  root 'planes#index'
 	    
-	    ...
+  get '/planes', to: 'planes#index'
+  get '/planes/new', to: 'planes#new'
 	    
-	    def create
-	      plane = params[:plane]
-	      Plane.create(plane)
-	      redirect_to "/planes"
-	    end
+  # route to handle the submitted form
+  post '/planes', to: 'planes#create'
 	    
-	  end
+end
+```
 
-However, while this might be fine in rails `3.2` it won't fly in rails `4.0`, which has something called **strong parameters**. To follow this strong parameters convention we must change the way we accept params to something like one of the following.
+This leads us to the most complex method yet... `create`. For now we will just have it redirect to the `"/planes"` route to make sure it's working. Let's also print the params hash to the console.
 
----
+```ruby
+# app/controllers/planes_controller.rb
+
+PlanesController < ApplicationController
+    
+  ...
+    
+  def create
+  	puts params
+    redirect_to "/planes"
+  end
+    
+end
+```
+
+### An operational CREATE method
 
 #### Params Hash
-In HTTP/HTML, the params are a series of key-value pairs. Params are a hash. Rails has  special syntax for making params a hash w/ additional hashes inside:
+In HTTP/HTML, the params are a series of key-value pairs. Params are a hash. Rails has  special syntax for making params a hash w/ additional hashes inside.
 
+Take a look at the rails console. We can grab the `:plane` hash out of the `params` hash, and the tell it to permit the keys we want: `:name`, `:kind`, and `:description`.
 
-We can grab the `:plane` hash out of the `params` hash, and the tell it to permit the keys we want: `:name`, `:kind`, and `:description`.
+Rails uses a special, secure way to grab the object from the params hash. It uses [**strong parameters**](https://github.com/rails/strong_parameters). Essentially, parameters are forbidden to be used in Active Model mass assignments (and therefore written to the database) until they have been whitelisted. To follow the strong parameters convention we must change the way we accept params to something like one of the following.
 
-`app/controllers/planes_controller.rb`
+```ruby
+# app/controllers/planes_controller.rb
 
-  PlanesController < ApplicationController
+PlanesController < ApplicationController
     
-    ...
+  ...
     
-    def create
-      plane = params[:plane].permit(:name, :kind, :description)
-      Plane.create(plane)
-      redirect_to "/planes"
-    end
-    
+  def create
+    plane = params[:plane].permit(:name, :kind, :description)
+    Plane.create(plane)
+    redirect_to "/planes"
   end
+    
+end
+```
 
 or, (preferably) just say `.require(:plane)`
 
 
-`app/controllers/planes_controller.rb`
-
-	  PlanesController < ApplicationController
-	    
-	    ...
-	    
-	    def create
-	      plane = params.require(:plane).permit(:name, :kind, :description)
-	      Plane.create(plane)
-	      redirect_to "/planes"
-	    end
-	    
-	  end
+`plane = params.require(:plane).permit(:name, :kind, :description)`
 
 
 In reality **strong params** is just a nice way of making sure someone isn't setting param values that you don't want them to be setting.
 
 
-
----
-
-### Refactoring our Index
-
-We first need to setup our `#index` method in `planes`
-
-`app/controllers/planes_controller.rb`
-
-    PlanesController < ApplicationController
-    
-      def index
-        @planes = Plane.all
-        render :index
-      end
-    
-    ...
-	    
-	end
-
-
-Let's finally put some `erb` in our `index` view.
-
-`app/views/index.html.erb`
-  
-	  <% @planes.each do |plane| %>
-	    
-	    <div>
-	      Name: <%= plane[:name] %> <br>
-	      Kind: <%= plane[:kind] %> <br>
-	      Description: <%= plane[:description] %>
-	    </div>
-	  
-	  <% end %>
-
 <br>
 
-## Halfway there: Take off - SHOW
+## Halfway there: SHOW Action
 
-We've successfully made an `index`, `new`, and `create`. Next we will talk about adding a `show`, `edit`, and `update`
-
-In routes.rb
+We've successfully made an `index`, `new`, and `create`. Next we will talk about adding a `show`, `edit`, and `update`. First, let's build SHOW:
 
 ```ruby
+# routes.rb (below the NEW route)
 get "/planes/:id", to: "planes#show"
-```
 
-In our controller
 
-```ruby
+# planes_controller.rb
+
 def show
- id = params[:id]
- @plane = Plane.find(id)
+  id = params[:id]
+  @plane = Plane.find(id)
 end
 
-or 
+or use
 
 @plane = Plane.find(params[:id])
 ```
 
-And then we create a show view (show.html.erb) and input the information using:
+Let's create `show.html.erb`
 
 ```ruby
 <h2><%= @plane.name %></h2>
 <p><%= @plane.kind %></p>
 ```
 
-In our index page we can also include a link to the individual plane page using
+In our index page we can also include a link to the individual plane page:
+
 ```ruby
-<a href = "/planes/<%= plane.id %>">Show</a>
+# replace the NAME line with the following
+<a href = "/planes/<%= plane.id %>"><%= plane[:name] %></a><br>
 ```
 
-We can dry this up later like so:
+We can dry this up by using Rails paths like so:
 
-- `route.rb` - add `as: :plane` to the end of the show route.
-- `index.html.erb` - `<%= link_to "Show me the individual plane!", plane_path(plane) %>` 
+```ruby
+# route.rb
+# add `as: :plane` to the end of the show route
+get '/planes/:id', to: 'planes#show', as: :plane
 
+
+# which allows us to use link_to in index.html.erb
+<%= link_to plane[:name], plane_path(plane) %><br>
+```
+
+####The order of the routes is important!
+What happens if your SHOW route comes before the NEW route in `routes.rb`? Why?
 
 <br>
 
-## Adding Edit + Update Actions
+## EDIT + UPDATE Actions
 
 Edit + Update are related like New + Create. Remember that update does not need it's own view.
 
-**routes.rb**
-
-```
+```ruby
+# routes.rb
 get 'planes/:id/edit', to: 'planes#edit', as: :edit_plane
 patch 'planes/:id', to: 'planes#update'
 
-```
 
-**edit.html.erb**
-
+# edit.html.erb
 Copy the form from `new.html.erb`
 
-**Planes Controller**
 
-```
-  def edit
-    @plane = Plane.find(params[:id])
-  end
+# planes_controller.rb
 
-  def update
-    @plane = Plane.find(params[:id])
-    @plane.update_attributes(params.require(:plane).permit(:name, :kind, :description))
+def edit
+  @plane = Plane.find(params[:id])
+end
+
+def update
+  @plane = Plane.find(params[:id])
+  @plane.update_attributes(params.require(:plane).permit(:name, :kind, :description))
     redirect_to planes_path
-  end
+end
 ```
 
 <br>
 
-## Adding Delete Action
+## DELETE Action
 
-**routes.rb**
+```ruby
+# routes.rb
+delete 'planes/:id', to: 'planes#destroy'
 
-`delete 'planes/:id', to: 'planes#destroy'`
+
+# planes_controller.rb
+
+def destroy
+  @plane = Plane.find(params[:id])
+  @plane.destroy
+  redirect_to planes_path
+end
 
 
-**Planes Controller**
+# show.html.erb
 
+<%= link_to "Delete this Plane!", @plane, method: :delete, data: { confirm: 'Are you sure you want to delete it?' } %>
 ```
-  def destroy
-    @plane = Plane.find(params[:id])
-    @plane.destroy
-    redirect_to planes_path
-  end
-```
 
-**show.html.erb**
+## Advanced Routing
 
-`<%= link_to "Delete this Plane!", @plane, method: :delete, data: { confirm: 'Are you sure you want to delete it?' } %>`
+##Review
+- Which actions do not require a view?
+- Why does the order of the routes matter?
+- What are strong parameters?
+- How are New/Create and Edit/Update related?
+- What are Rails Helpers?
+- What's the shortcut to access the 7 REST-ful routes in our `routes.rb` file.
+- How can we limit which resources we want to use?
+
+##Further Resources
+- [Rails Helpers](http://mixandgo.com/blog/the-beginner-s-guide-to-rails-helpers)
+- [Advanced Routing](https://github.com/ATL-WDI-Curriculum/rails-resources-and-routing/blob/master/adv_routing.md)
+
   
   
 
