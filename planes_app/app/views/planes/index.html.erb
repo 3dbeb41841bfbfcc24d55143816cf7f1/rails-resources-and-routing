@@ -1,0 +1,13 @@
+<h1>Hello Pilots</h1>
+
+<% @planes.each do |plane| %>
+
+  <div>
+    ID: <%= plane.id %> <br>
+    Name: <%= link_to plane.name, unicorn_path(plane) %><br>
+    Kind: <%= plane[:kind] %> <br>
+    Description: <%= plane[:description] %>
+  </div>
+  <br>
+
+<% end %>
