@@ -85,8 +85,10 @@ Additionally, we usually associate **CRUD** with the following **HTTP** verbs (A
 
 Just like in Node.js, we'll be using RESTful routing practices in Rails. To be RESTful, something simply has to be named or written in a **semantic** (*relating to meaning in language or logic*) way. So RESTful routing is just a way of writing our `routes` so that the *purpose* of each route is clear to another developer (or even a user) just by looking at the route's structure.
 
-####HookThe router is the doorman of your application. When an HTTP request arrives from the user's browser, it needs to know which controller action (method) should be run. Should we display the "new user" webpage? Should we edit an existing user with whatever data got sent along?
-The **Router** is basically just a matching service. It looks at the HTTP verb (GET, POST, PUT, DELETE) and the URL that it being requested and matches it with the appropriate controller action to run. It's a pretty simple function but an essential one. If it can't find a route that matches the request, your application will throw an error.
+####Hook
+The router is the doorman of your application. When an HTTP request arrives from the user's browser, it needs to know which controller action (method) should be run. Should we display the "new user" webpage? Should we edit an existing user with whatever data got sent along?
+
+The **Router** is basically just a matching service. It looks at the HTTP verb (GET, POST, PUT, DELETE) and the URL that it being requested and matches it with the appropriate controller action to run. It's a pretty simple function but an essential one. If it can't find a route that matches the request, your application will throw an error.
 
 We've talked before about the 7 basic CRUD routes. Using the example of a "photo" model, here's what those 7 CRUD routes end up being when paired with RESTful routing practices:
 
@@ -105,10 +107,15 @@ We've talked before about the 7 basic CRUD routes. Using the example of a "photo
 [Great Routing Overview - The Odin Project](http://www.theodinproject.com/ruby-on-rails/routing)
 
 
-### Distinguish between a route and a pathWhat are the seven RESTful routes for a resource?
-Which RESTful routes share the same URL but use different verbs?
-Rake routes for an app with resource routing and walk through it and diagram on the board.
-- a **path** is a sequence of segments (conceptually similar to directories, though not necessarily representing them) separated by a forward slash ("/").- a **route** is a combination of an HTTP request and a path
+### Distinguish between a route and a path
+What are the seven RESTful routes for a resource?
+
+Which RESTful routes share the same URL but use different verbs?
+
+Rake routes for an app with resource routing and walk through it and diagram on the board.
+
+- a **path** is a sequence of segments (conceptually similar to directories, though not necessarily representing them) separated by a forward slash ("/").
+- a **route** is a combination of an HTTP request and a path
 
 <br>
 
@@ -593,8 +600,6 @@ end
 
 <%= link_to "Delete this Plane!", @plane, method: :delete, data: { confirm: 'Are you sure you want to delete it?' } %>
 ```
-
-## Advanced Routing
 
 ##Review
 - Which actions do not require a view?
